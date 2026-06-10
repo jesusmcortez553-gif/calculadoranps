@@ -567,7 +567,7 @@ export default function App() {
           letterSpacing: 0.3,
         }}
       >
-        Desarrollado por Jesús Mendoza C. · Guía de Agencia BCP Pichanaki
+        JMC
       </footer>
     </div>
   )
