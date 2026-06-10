@@ -35,6 +35,7 @@ const C = {
 }
 
 const METAS = { ventanilla: 80, plataforma: 82, agencia: 81 }
+const STRETCH = 94
 const META_120 = { ventanilla: 96, plataforma: 98, agencia: 97 }
 
 /* ---------- matemática ---------- */
@@ -203,10 +204,15 @@ function Input({ label, value, onChange, color }) {
     <label style={{ display: 'flex', flexDirection: 'column', gap: 4, flex: 1, minWidth: 90 }}>
       <span style={{ fontSize: 12, fontWeight: 600, color }}>{label}</span>
       <input
-        type="number"
-        min="0"
-        value={value}
-        onChange={(e) => onChange(Math.max(0, parseInt(e.target.value || '0', 10)))}
+        type="text"
+        inputMode="numeric"
+        pattern="[0-9]*"
+        value={value || ''}
+        onFocus={(e) => e.target.select()}
+        onChange={(e) => {
+          const raw = e.target.value.replace(/[^0-9]/g, '')
+          onChange(raw === '' ? 0 : parseInt(raw, 10))
+        }}
         style={{
           border: `2px solid ${color}`,
           borderRadius: 8,
@@ -256,11 +262,13 @@ function TablaProyeccion({ p, n, d, meta, etiqueta }) {
                   <td style={{ ...td, fontWeight: 700, color: c }}>{fmt(nps)}</td>
                   <td style={td}>+{fmt(nps - actual)}</td>
                   <td style={{ ...td, display: 'flex', alignItems: 'center', gap: 4 }}>
-                    {ok
-                      ? <><CheckCircle size={14} color={C.green} /> Meta</>
-                      : warn
-                        ? <><AlertTriangle size={14} color={C.yellow} /> Cerca</>
-                        : <><XCircle size={14} color={C.red} /> Bajo meta</>}
+                    {nps >= STRETCH
+                      ? <><CheckCircle size={14} color={C.green} /> Objetivo 94</>
+                      : ok
+                        ? <><CheckCircle size={14} color={C.green} /> Meta mínima</>
+                        : warn
+                          ? <><AlertTriangle size={14} color={C.yellow} /> Cerca</>
+                          : <><XCircle size={14} color={C.red} /> Bajo meta</>}
                   </td>
                 </tr>
               )
@@ -287,6 +295,7 @@ function PantallaColaborador() {
   const meta120 = META_120[canal]
   const nps = calcNPS(p, n, d)
   const falta100 = promotoresPara(p, n, d, meta)
+  const falta94 = promotoresPara(p, n, d, STRETCH)
   const falta120 = promotoresPara(p, n, d, meta120)
 
   return (
@@ -334,13 +343,18 @@ function PantallaColaborador() {
           <div style={{ display: 'flex', gap: 10, marginTop: 16, flexWrap: 'wrap' }}>
             <div style={pill('#e8edfb', C.header)}>
               {falta100 === 0
-                ? <><CheckCircle size={14} style={{ verticalAlign: -2 }} /> Meta ({meta}) alcanzada</>
-                : <>Para meta {meta} (100%): +{falta100} promotor{falta100 > 1 ? 'es' : ''}</>}
+                ? <><CheckCircle size={14} style={{ verticalAlign: -2 }} /> Meta mínima ({meta}) alcanzada</>
+                : <>Meta mínima {meta}: +{falta100} promotor{falta100 > 1 ? 'es' : ''}</>}
+            </div>
+            <div style={pill('#f0fdf4', '#166534')}>
+              {falta94 === 0
+                ? <><CheckCircle size={14} style={{ verticalAlign: -2 }} /> Objetivo 94 alcanzado</>
+                : <>Objetivo 94: +{falta94} promotor{falta94 > 1 ? 'es' : ''}</>}
             </div>
             <div style={pill('#fef3e2', '#b45309')}>
               {falta120 === 0
                 ? <><CheckCircle size={14} style={{ verticalAlign: -2 }} /> 120% alcanzado</>
-                : <>Para {meta120} (120%): +{falta120} promotor{falta120 > 1 ? 'es' : ''}</>}
+                : <>120% ({meta120}): +{falta120} promotor{falta120 > 1 ? 'es' : ''}</>}
             </div>
           </div>
         )}
@@ -468,11 +482,13 @@ function PantallaAgencia() {
                         <td style={td}>{fmt(nuevoCanal)}</td>
                         <td style={{ ...td, fontWeight: 700, color: c }}>{fmt(nuevaAg)}</td>
                         <td style={{ ...td, display: 'flex', alignItems: 'center', gap: 4 }}>
-                          {ok
-                            ? <><CheckCircle size={14} color={C.green} /> Meta</>
-                            : warn
-                              ? <><AlertTriangle size={14} color={C.yellow} /> Cerca</>
-                              : <><XCircle size={14} color={C.red} /> Bajo meta</>}
+                          {nuevaAg >= STRETCH
+                            ? <><CheckCircle size={14} color={C.green} /> Objetivo 94</>
+                            : ok
+                              ? <><CheckCircle size={14} color={C.green} /> Meta mínima</>
+                              : warn
+                                ? <><AlertTriangle size={14} color={C.yellow} /> Cerca</>
+                                : <><XCircle size={14} color={C.red} /> Bajo meta</>}
                         </td>
                       </tr>
                     )
@@ -567,7 +583,7 @@ export default function App() {
           letterSpacing: 0.3,
         }}
       >
-        JMC
+        Desarrollado por Jesús Mendoza C. · Guía de Agencia BCP Pichanaki
       </footer>
     </div>
   )
