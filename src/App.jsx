@@ -534,7 +534,7 @@ export default function App() {
           gap: 14,
         }}
       >
-        <img src="/logo-bcp.png" alt="BCP" style={{ height: 36, objectFit: 'contain' }} />
+        <span style={{ color: '#fff', fontWeight: 800, fontSize: 20 }}>Agencia Pichanaki</span>
         <span style={{ color: '#fff', fontWeight: 600, fontSize: 15 }}>
           Calculadora NPS · Agencia Pichanaki
         </span>
